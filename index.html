@@ -1,63 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>GhostTab</title>
   <style>
     body {
       background-color: #121212;
-      color: #f0f0f0;
-      font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 40px;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
       text-align: center;
+      padding: 40px;
     }
 
     input[type="text"] {
-      padding: 12px;
-      width: 80%;
+      padding: 10px;
+      width: 60%;
       max-width: 500px;
-      font-size: 16px;
       border: none;
-      border-radius: 8px;
-      margin-top: 20px;
-      outline: none;
+      border-radius: 5px;
+      margin-right: 10px;
     }
 
     button {
-      margin-top: 20px;
       padding: 10px 20px;
-      background: #333;
+      background-color: #1f1f1f;
       color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
+      border: 1px solid #555;
+      border-radius: 5px;
       cursor: pointer;
     }
 
-    h1 {
-      margin-bottom: 30px;
+    #results {
+      margin-top: 30px;
+      text-align: left;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    #results div {
+      background-color: #1e1e1e;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+
+    #results a {
+      color: #62b4ff;
+      text-decoration: none;
+    }
+
+    #results a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
+
   <h1>Welcome back, Ghost</h1>
-  <input type="text" id="search" placeholder="Search privately..." />
+
+  <input id="searchBox" type="text" placeholder="Search...">
   <button onclick="runSearch()">Search</button>
 
+  <div id="results"></div>
+
   <script>
-    function runSearch() {
-      const query = document.getElementById("search").value.trim();
-      if (query !== "") {
-        // Open DuckDuckGo results in new tab
-        const url = `https://duckduckgo.com/?q=${encodeURIComponent(query)}&kl=us-en&kp=-2`;
-        window.open(url, '_blank');
+    async function runSearch() {
+      const q = document.getElementById('searchBox').value.trim();
+      if (!q) return;
+
+      const res = await fetch('https://f0cfd33f-ca72-4452-a95c-6bb76ca88021-00-o88x25jjt14l.kirk.replit.dev/search?q=' + encodeURIComponent(q));
+      const data = await res.json();
+
+      const container = document.getElementById('results');
+      container.innerHTML = '';
+
+      if (!data.results || data.results.length === 0) {
+        container.innerHTML = '<p>No results found</p>';
+        return;
       }
+
+      data.results.forEach(r => {
+        const div = document.createElement('div');
+        div.innerHTML = `
+          <h3><a href="${r.url}" target="_blank">${r.title}</a></h3>
+          <p>${r.desc}</p>
+        `;
+        container.appendChild(div);
+      });
     }
   </script>
+
 </body>
 </html>
